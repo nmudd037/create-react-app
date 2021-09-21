@@ -1,10 +1,10 @@
 {
-  "name": "react-scripts",
+  "name": "mnr-react-scripts",
   "version": "4.0.3",
-  "description": "Configuration and scripts for Create React App.",
+  "description": "MNR Configuration and scripts for Create React App.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/create-react-app.git",
+    "url": "https://github.com/nmudd037/create-react-app.git",
     "directory": "packages/react-scripts"
   },
   "license": "MIT",
