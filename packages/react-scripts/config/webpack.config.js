@@ -31,7 +31,10 @@ const paths = require('./paths');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
-const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+//const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+// Applied Change Start: New version of ForkTsCheckerWebpackPlugin 
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+// Applied Change End: New version of ForkTsCheckerWebpackPlugin 
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 // @remove-on-eject-begin
@@ -434,6 +437,9 @@ module.exports = function (webpackEnv) {
                     'babel-preset-react-app',
                     'react-dev-utils',
                     'react-scripts',
+                     // Applied Change Start: Add babel plugin for styled components
+                    'babel-plugin-styled-components'
+                    // Applied Change End: Add babel plugin for styled components
                   ]
                 ),
                 // @remove-on-eject-end
@@ -449,6 +455,9 @@ module.exports = function (webpackEnv) {
                       },
                     },
                   ],
+                  // Applied Change Start: Add babel plugin for styled components 
+                  [require.resolve('babel-plugin-styled-components')],
+                  // Applied Change End: Add babel plugin for styled components
                   isEnvDevelopment &&
                     shouldUseReactRefresh &&
                     require.resolve('react-refresh/babel'),
@@ -516,9 +525,11 @@ module.exports = function (webpackEnv) {
                 sourceMap: isEnvProduction
                   ? shouldUseSourceMap
                   : isEnvDevelopment,
+                // Applied Change Start: To allow Sass exports  
                 modules: {
                   compileType: 'icss',
-                },  
+                },
+                // Applied Change End: To allow Sass exports   
               }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
@@ -536,7 +547,9 @@ module.exports = function (webpackEnv) {
                   ? shouldUseSourceMap
                   : isEnvDevelopment,
                 modules: {
+                  // Applied Change Start: To allow Sass exports  
                   compileType: 'module',
+                  // Applied Change End: To allow Sass exports
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
               }),
@@ -553,9 +566,11 @@ module.exports = function (webpackEnv) {
                   sourceMap: isEnvProduction
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
+                  // Applied Change Start: To allow Sass exports  
                   modules: {
                     compileType: 'icss',
-                  },  
+                  },
+                  // Applied Change End: To allow Sass exports  
                 },
                 'sass-loader'
               ),
@@ -576,7 +591,9 @@ module.exports = function (webpackEnv) {
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
                   modules: {
+                    // Applied Change Start: To allow Sass exports
                     compileType: 'module',
+                    // Applied Change End: To allow Sass exports
                     getLocalIdent: getCSSModuleLocalIdent,
                   },
                 },
@@ -730,38 +747,93 @@ module.exports = function (webpackEnv) {
           // See https://github.com/cra-template/pwa/issues/13#issuecomment-722667270
           maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         }),
+
       // TypeScript type checking
-      useTypeScript &&
-        new ForkTsCheckerWebpackPlugin({
-          typescript: resolve.sync('typescript', {
-            basedir: paths.appNodeModules,
-          }),
-          async: isEnvDevelopment,
-          useTypescriptIncrementalApi: false,
-          checkSyntacticErrors: true,
-          resolveModuleNameModule: process.versions.pnp
-            ? `${__dirname}/pnpTs.js`
-            : undefined,
-          resolveTypeReferenceDirectiveModule: process.versions.pnp
-            ? `${__dirname}/pnpTs.js`
-            : undefined,
-          tsconfig: paths.appTsConfig,
-          reportFiles: [
-            // This one is specifically to match during CI tests,
-            // as micromatch doesn't match
-            // '../cra-template-typescript/template/src/App.tsx'
-            // otherwise.
-            '../**/src/**/*.{ts,tsx}',
-            '**/src/**/*.{ts,tsx}',
-            '!**/src/**/__tests__/**',
-            '!**/src/**/?(*.)(spec|test).*',
-            '!**/src/setupProxy.*',
-            '!**/src/setupTests.*',
-          ],
-          silent: true,
-          // The formatter is invoked directly in WebpackDevServerUtils during development
-          formatter: isEnvProduction ? typescriptFormatter : undefined,
-        }),
+      // useTypeScript &&
+      //   new ForkTsCheckerWebpackPlugin({
+      //     typescript: resolve.sync('typescript', {
+      //       basedir: paths.appNodeModules,
+      //     }),
+      //     async: isEnvDevelopment,
+             // Applied Change Start: Disable Typescript Incremental Api
+      //     useTypescriptIncrementalApi: false,
+             // Applied Change End: Disable Typescript Incremental Api 
+      //     checkSyntacticErrors: true,
+      //     resolveModuleNameModule: process.versions.pnp
+      //       ? `${__dirname}/pnpTs.js`
+      //       : undefined,
+      //     resolveTypeReferenceDirectiveModule: process.versions.pnp
+      //       ? `${__dirname}/pnpTs.js`
+      //       : undefined,
+      //     tsconfig: paths.appTsConfig,
+      //     reportFiles: [
+      //       // This one is specifically to match during CI tests,
+      //       // as micromatch doesn't match
+      //       // '../cra-template-typescript/template/src/App.tsx'
+      //       // otherwise.
+      //       '../**/src/**/*.{ts,tsx}',
+      //       '**/src/**/*.{ts,tsx}',
+      //       '!**/src/**/__tests__/**',
+      //       '!**/src/**/?(*.)(spec|test).*',
+      //       '!**/src/setupProxy.*',
+      //       '!**/src/setupTests.*',
+      //     ],
+      //     silent: true,
+      //     // The formatter is invoked directly in WebpackDevServerUtils during development
+      //     formatter: isEnvProduction ? typescriptFormatter : undefined,
+      //   }),
+      
+      // Applied Change Start: New version of ForkTsCheckerWebpackPlugin 
+       // TypeScript type checking
+       useTypeScript &&
+       new ForkTsCheckerWebpackPlugin({
+         async: isEnvDevelopment,
+         typescript: {
+           typescriptPath: resolve.sync('typescript', {
+             basedir: paths.appNodeModules,
+           }),
+           configOverwrite: {
+             compilerOptions: {
+               sourceMap: isEnvProduction
+                 ? shouldUseSourceMap
+                 : isEnvDevelopment,
+               skipLibCheck: true,
+               inlineSourceMap: false,
+               declarationMap: false,
+               noEmit: true,
+               incremental: true,
+               tsBuildInfoFile: paths.appTsBuildInfoFile,
+             },
+           },
+           context: paths.appPath,
+           diagnosticOptions: {
+             syntactic: true,
+           },
+           mode: 'write-references',
+           // profile: true,
+         },
+         issue: {
+           // This one is specifically to match during CI tests,
+           // as micromatch doesn't match
+           // '../cra-template-typescript/template/src/App.tsx'
+           // otherwise.
+           include: [
+             { file: '../**/src/**/*.{ts,tsx}' },
+             { file: '**/src/**/*.{ts,tsx}' },
+           ],
+           exclude: [
+             { file: '**/src/**/__tests__/**' },
+             { file: '**/src/**/?(*.){spec|test}.*' },
+             { file: '**/src/setupProxy.*' },
+             { file: '**/src/setupTests.*' },
+           ],
+         },
+         logger: {
+           infrastructure: 'silent',
+         },
+       }),
+       // Applied Change End: New version of ForkTsCheckerWebpackPlugin 
+
       !disableESLintPlugin &&
         new ESLintPlugin({
           // Plugin options
