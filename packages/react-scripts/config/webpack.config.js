@@ -453,7 +453,7 @@ module.exports = function (webpackEnv) {
                     },
                   ],
                   // Applied Change Start: Add babel plugin for styled components 
-                  [require.resolve('babel-plugin-styled-components')],
+                  isEnvDevelopment && [require.resolve('babel-plugin-styled-components')],
                   // Applied Change End: Add babel plugin for styled components
                   isEnvDevelopment &&
                     shouldUseReactRefresh &&
